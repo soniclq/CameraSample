@@ -48,6 +48,8 @@ public class CameraSurfaceView extends GLSurfaceView implements SurfaceTexture.O
                 SurfaceTexture texture = (SurfaceTexture)msg.obj;
                 texture.setOnFrameAvailableListener(this);
                 openCamera(texture);
+                // 相机显示旋转90
+                mCamera.setDisplayOrientation(90);
                 mCamera.startPreview();
                 break;
             default:
