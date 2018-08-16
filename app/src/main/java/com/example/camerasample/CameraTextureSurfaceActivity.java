@@ -20,9 +20,8 @@ import com.example.camerasample.gl.EglCore;
 import com.example.camerasample.gl.FullFrameRect;
 import com.example.camerasample.gl.Texture2dProgram;
 import com.example.camerasample.gl.WindowSurface;
+import com.example.camerasample.widget.CameraSurfaceView;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -36,7 +35,8 @@ import static com.example.camerasample.gl.Texture2dProgram.ProgramType.TEXTURE_E
 public class CameraTextureSurfaceActivity extends Activity implements SurfaceHolder.Callback, SurfaceTexture.OnFrameAvailableListener, MediaDataCallback, View.OnClickListener {
 
     private final  static  String TAG = CameraTextureSurfaceActivity.class.getName();
-    private SurfaceView mSurfaceView;
+//    private SurfaceView mSurfaceView;
+    private CameraSurfaceView cameraSurfaceView;
     private WindowSurface mDisplaySurface;
     private FullFrameRect fullFrameRect;
     private int mTextureId;
@@ -76,8 +76,8 @@ public class CameraTextureSurfaceActivity extends Activity implements SurfaceHol
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_surfaceview);
-        mSurfaceView = (SurfaceView)findViewById(R.id.surface_view);
-        mSurfaceView.getHolder().addCallback(this);
+        cameraSurfaceView = (CameraSurfaceView) findViewById(R.id.surface_view);
+//        mSurfaceView.getHolder().addCallback(this);
         btn = (Button)findViewById(R.id.btn_stop);
         btn.setOnClickListener(this);
 
