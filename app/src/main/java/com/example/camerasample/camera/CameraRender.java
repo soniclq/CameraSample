@@ -42,11 +42,13 @@ public class CameraRender implements GLSurfaceView.Renderer {
 
     @Override
     public void onDrawFrame(GL10 gl10) {
-        float [] matrix = new float[16];
+        float [] texmatrix = new float[16];
         mSurfaceTexture.updateTexImage();
-        mSurfaceTexture.getTransformMatrix(matrix);
-        filter.draw(0, mTextureId, filter.getVertexBuffer(), filter.getTextrueBuffer());
-//        fullFrameRect.drawFrame(mTextureId, matrix);
+        mSurfaceTexture.getTransformMatrix(texmatrix);
+
+
+        filter.draw(0, mTextureId, filter.getVertexBuffer(),texmatrix, filter.getTextrueBuffer());
+//        fullFrameRect.drawFrame(mTextureId, texmatrix);
 
     }
 
