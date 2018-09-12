@@ -19,23 +19,24 @@ public class CameraSurfaceView extends GLSurfaceView implements SurfaceTexture.O
     private Camera mCamera;
     private CommonHandlerListener commonHandlerListener;
     private CameraHandler cameraHandler;
+    private Context mContext;
 
     public CameraSurfaceView(Context context) {
         super(context);
-        init();
+        init(context);
     }
 
     public CameraSurfaceView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init();
+        init(context);
     }
 
 
 
-    private void init(){
+    private void init(Context context){
         cameraHandler = new CameraHandler(this);
         setEGLContextClientVersion(2);
-        mCameraRender = new CameraRender(cameraHandler);
+        mCameraRender = new CameraRender(context, cameraHandler);
 
         setRenderer(mCameraRender);
         setRenderMode(RENDERMODE_WHEN_DIRTY);
