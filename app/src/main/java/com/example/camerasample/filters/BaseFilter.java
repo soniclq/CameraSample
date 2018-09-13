@@ -14,139 +14,100 @@ import java.nio.FloatBuffer;
 public class BaseFilter {
 
     protected  int mFilterProgram;
+    protected  int aPositionLocation;
+    protected  int aTextureCoordLocation;
+    protected  int uTexMatrixLocation;
+    protected  int uMVPMatrixLocation;
+    protected  int inputImageTexture;
+    float [] mMvpMatrix;
+    protected Drawable2d drawable2d;
 
-    private int maPositionLoc;
-    private int muMVPMatrixLoc;
-    private int maTextureCoordLoc;
-    private int mTextureLoc;
-    private int muTexMatrixLoc;
+    protected int mTextureId;
+    protected int mTextureTarget;
 
-    private float[] mTexMatrix;
-    private float[] mMvpMatrix;
+   public BaseFilter(Context context){
+       mFilterProgram = createProgram(context);
+       mMvpMatrix = new float[16];
+       Matrix.setIdentityM(mMvpMatrix, 0);
+       drawable2d = new Drawable2d(Drawable2d.Prefab.FULL_RECTANGLE);
+       getGLValue();
 
-    private int mTextureTarget;
-
-    private Drawable2d drawable2d;
-//    protected  int[] m
-
-
-    public BaseFilter(Context context){
-        mFilterProgram = createProgram(context, getVertexShaderId(), getFragmentShaderId());
-
-        mTexMatrix = new float[16];
-        Matrix.setIdentityM(mTexMatrix, 0);
-
-        mMvpMatrix = new float[16];
-        Matrix.setIdentityM(mMvpMatrix, 0);
-        mTextureTarget = GLES11Ext.GL_TEXTURE_EXTERNAL_OES;
-
-        drawable2d = new Drawable2d(Drawable2d.Prefab.FULL_RECTANGLE);
-        getGLSLValues();
-    }
-
-    protected  int getVertexShaderId(){
-        return R.raw.vertex_shader_base;
-    }
-
-    protected  int getFragmentShaderId(){
-        return R.raw.fragment_shader_base;
-    }
-
-    int createProgram(Context context, int vertexId, int fragmentId){
-        int program;
-        program = GlUtil.createProgram(context, vertexId, fragmentId);
-        return  program;
-    }
+       mTextureTarget = GLES11Ext.GL_TEXTURE_EXTERNAL_OES;
 
 
-    protected void getGLSLValues() {
-        mTextureLoc = GLES20.glGetUniformLocation(mFilterProgram, "inputImageTexture");
-        GlUtil.checkLocation(mTextureLoc, "mTextureLoc");
+   }
 
-        maPositionLoc = GLES20.glGetAttribLocation(mFilterProgram, "aPosition");
-        GlUtil.checkLocation(maPositionLoc, "maPositionLoc");
+   private int createProgram(Context context){
+       int program = GlUtil.createProgram(context, getVertexShaderId(), getFragmentShaderId());
+       return program;
+   }
 
-        muMVPMatrixLoc = GLES20.glGetUniformLocation(mFilterProgram, "uMVPMatrix");
-        GlUtil.checkLocation(muMVPMatrixLoc, "muMVPMatrixLoc");
+   protected int getVertexShaderId(){
+       return R.raw.vertex_shader_base;
+   }
 
-        maTextureCoordLoc = GLES20.glGetAttribLocation(mFilterProgram, "aTextureCoord");
-        GlUtil.checkLocation(maTextureCoordLoc, "maTextureCoordLoc");
+   protected  int getFragmentShaderId(){
+       return R.raw.fragment_shader_base;
+   }
 
-        muTexMatrixLoc = GLES20.glGetUniformLocation(mFilterProgram, "uTexMatrix");
-        GlUtil.checkLocation(muTexMatrixLoc, "muTexMatrixLoc");
+   private void getGLValue(){
+       aPositionLocation = GLES20.glGetAttribLocation(mFilterProgram, "aPosition");
+       aTextureCoordLocation = GLES20.glGetAttribLocation(mFilterProgram, "aTextureCoord");
 
-    }
+       uMVPMatrixLocation = GLES20.glGetUniformLocation(mFilterProgram, "uMVPMatrix");
+       uTexMatrixLocation = GLES20.glGetUniformLocation(mFilterProgram, "uTexMatrix");
+       inputImageTexture = GLES20.glGetUniformLocation(mFilterProgram, "inputImageTexture");
+   }
 
-    public void draw(int cameraId, int textureId, FloatBuffer vertexBuffer, float[] texMatrix, FloatBuffer textureBuffer){
-        GlUtil.checkGlError("draw start");
+   public void draw(int textureTarget, int textureId,  FloatBuffer vertexBuffer, FloatBuffer textureBuffer ,float[] textMatrix, int screen_width, int screen_height){
+       GLES20.glUseProgram(mFilterProgram);
+       bindGLValue(mTextureTarget, textureId, vertexBuffer, textureBuffer, textMatrix);
 
-        GLES20.glUseProgram(mFilterProgram);
-        GlUtil.checkGlError("glUseProgram");
+       GLES20.glViewport(0,0, screen_width, screen_height);
+       GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
+   }
 
-        onBindValue(mTextureTarget, textureId, vertexBuffer, texMatrix, textureBuffer);
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
-    }
+   protected void bindGLValue(int targetTarget, int targetId, FloatBuffer vertexBuffer, FloatBuffer textureBuffer, float[] textMatrix){
 
-    protected void onBindValue(int target, int textureId, FloatBuffer vertexBuffer, float[] texMatrix,  FloatBuffer textureBuffer){
-        GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-        GLES20.glBindTexture(target, textureId);
-        GlUtil.checkGlError("glBindTexture");
+       GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+       GLES20.glBindTexture(targetTarget, targetId);
+       GLES20.glUniform1i(inputImageTexture, 0);
 
-        GLES20.glUniform1i(mTextureLoc, 0);
-        GlUtil.checkGlError("glUniform1i");
+       GLES20.glEnableVertexAttribArray(aPositionLocation);
+       GLES20.glVertexAttribPointer(aPositionLocation, 2, GLES20.GL_FLOAT, false, 4 * 2, vertexBuffer);
 
-        GLES20.glEnableVertexAttribArray(maPositionLoc);
-        GlUtil.checkGlError("glEnableVertexAttribArray");
-        GLES20.glVertexAttribPointer(maPositionLoc, 2, GLES20.GL_FLOAT, false, 4* 2, vertexBuffer );
-        GlUtil.checkGlError("glVertexAttribPointer");
+       GLES20.glEnableVertexAttribArray(aTextureCoordLocation);
+       GLES20.glVertexAttribPointer(aTextureCoordLocation, 2, GLES20.GL_FLOAT, false, 4 * 2,  textureBuffer);
 
-        GLES20.glEnableVertexAttribArray(maTextureCoordLoc);
-        GlUtil.checkGlError("glEnableVertexAttribArray  maTextureCoordLoc");
+       GLES20.glUniformMatrix4fv(uMVPMatrixLocation, 1, false, mMvpMatrix, 0);
+       GLES20.glUniformMatrix4fv(uTexMatrixLocation, 1, false, textMatrix, 0);
 
-        GLES20.glVertexAttribPointer(maTextureCoordLoc, 2, GLES20.GL_FLOAT, false, 4* 2, textureBuffer);
-        GlUtil.checkGlError("glVertexAttribPointer  maTextureCoordLoc");
+   }
+
+   public FloatBuffer getVertexBuffer(){
+       return drawable2d.getVertexArray();
+   }
+
+   public FloatBuffer getTextrueBuffer(){
+       return drawable2d.getTexCoordArray();
+   }
+
+   public int createTextureObject(){
+       int[] textid = new int[1];
+       GLES20.glGenTextures(1, textid, 0);
+       GLES20.glBindTexture(mTextureTarget, textid[0]);
+
+       GLES20.glTexParameterf(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_MIN_FILTER,
+               GLES20.GL_NEAREST);
+       GLES20.glTexParameterf(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_MAG_FILTER,
+               GLES20.GL_LINEAR);
+       GLES20.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_WRAP_S,
+               GLES20.GL_CLAMP_TO_EDGE);
+       GLES20.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_WRAP_T,
+               GLES20.GL_CLAMP_TO_EDGE);
+       GlUtil.checkGlError("glTexParameter");
 
 
-        GLES20.glUniformMatrix4fv(muMVPMatrixLoc, 1,false, mMvpMatrix, 0);
-        GlUtil.checkGlError("glUniformMatrix4fv  muMVPMatrixLoc");
-
-        GLES20.glUniformMatrix4fv(muTexMatrixLoc, 1, false, texMatrix, 0);
-        GlUtil.checkGlError("glUniformMatrix4fv  muTexMatrixLoc");
-    }
-
-
-    /**
-     * Creates a texture object suitable for use with this program.
-     * <p>
-     * On exit, the texture will be bound.
-     */
-    public int createTextureObject() {
-        int[] textures = new int[1];
-        GLES20.glGenTextures(1, textures, 0);
-        GlUtil.checkGlError("glGenTextures");
-
-        int texId = textures[0];
-        GLES20.glBindTexture(mTextureTarget, texId);
-        GlUtil.checkGlError("glBindTexture " + texId);
-
-        GLES20.glTexParameterf(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_MIN_FILTER,
-                GLES20.GL_NEAREST);
-        GLES20.glTexParameterf(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_MAG_FILTER,
-                GLES20.GL_LINEAR);
-        GLES20.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_WRAP_S,
-                GLES20.GL_CLAMP_TO_EDGE);
-        GLES20.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_WRAP_T,
-                GLES20.GL_CLAMP_TO_EDGE);
-        GlUtil.checkGlError("glTexParameter");
-
-        return texId;
-    }
-
-    public FloatBuffer getVertexBuffer(){
-        return drawable2d.getVertexArray();
-    }
-
-    public FloatBuffer getTextrueBuffer(){
-        return  drawable2d.getTexCoordArray();
-    }
+       return textid[0];
+   }
 }

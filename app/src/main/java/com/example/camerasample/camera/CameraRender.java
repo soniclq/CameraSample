@@ -20,6 +20,8 @@ public class CameraRender implements GLSurfaceView.Renderer {
     private int mTextureId;
     private Context mContext;
     private BaseFilter filter;
+    private int mScreen_width;
+    private int mScreen_height;
 
     public CameraRender(Context context, Handler handler){
         mHandler = handler;
@@ -38,6 +40,8 @@ public class CameraRender implements GLSurfaceView.Renderer {
     @Override
     public void onSurfaceChanged(GL10 gl10, int width, int height) {
         mHandler.sendMessage(mHandler.obtainMessage(CameraSurfaceView.CAMERA_SETUP, width, height, mSurfaceTexture));
+        mScreen_width = width;
+        mScreen_height = height;
     }
 
     @Override
@@ -47,7 +51,7 @@ public class CameraRender implements GLSurfaceView.Renderer {
         mSurfaceTexture.getTransformMatrix(texmatrix);
 
 
-        filter.draw(0, mTextureId, filter.getVertexBuffer(),texmatrix, filter.getTextrueBuffer());
+        filter.draw(0, mTextureId, filter.getVertexBuffer(), filter.getTextrueBuffer(), texmatrix, mScreen_width, mScreen_height);
 //        fullFrameRect.drawFrame(mTextureId, texmatrix);
 
     }
