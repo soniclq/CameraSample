@@ -1,6 +1,7 @@
 package com.example.camerasample.filters;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
@@ -70,10 +71,17 @@ public class BaseFilter {
    protected void bindGLValue(int targetTarget, int targetId, FloatBuffer vertexBuffer, FloatBuffer textureBuffer, float[] textMatrix){
 
        GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+       GlUtil.checkGlError("glActiveTexture");
+
        GLES20.glBindTexture(targetTarget, targetId);
+       GlUtil.checkGlError("glBindTexture");
+
        GLES20.glUniform1i(inputImageTexture, 0);
+       GlUtil.checkGlError("glUniform1i");
 
        GLES20.glEnableVertexAttribArray(aPositionLocation);
+       GlUtil.checkGlError("glEnableVertexAttribArray aPositionLocation");
+
        GLES20.glVertexAttribPointer(aPositionLocation, 2, GLES20.GL_FLOAT, false, 4 * 2, vertexBuffer);
 
        GLES20.glEnableVertexAttribArray(aTextureCoordLocation);
@@ -107,7 +115,10 @@ public class BaseFilter {
                GLES20.GL_CLAMP_TO_EDGE);
        GlUtil.checkGlError("glTexParameter");
 
-
        return textid[0];
+   }
+
+   public void setBitmap(Bitmap bitmap){
+
    }
 }

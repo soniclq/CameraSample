@@ -1,8 +1,8 @@
 precision mediump float; //指定默认精度
-
+#extension GL_OES_EGL_image_external : require
 varying highp vec2 textureCoordinate;
 
-uniform sampler2D inputImageTexture;
+uniform samplerExternalOES inputImageTexture;
 uniform sampler2D inputImageTexture2;
 
 uniform float ratio;

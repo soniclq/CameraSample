@@ -1,13 +1,18 @@
 package com.example.camerasample.camera;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.SurfaceTexture;
 import android.opengl.GLSurfaceView;
 import android.os.Handler;
 
 import com.example.camerasample.filters.BaseFilter;
+import com.example.camerasample.filters.LutColorFilter;
 import com.example.camerasample.gl.FullFrameRect;
 import com.example.camerasample.widget.CameraSurfaceView;
+
+import java.io.IOException;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -32,9 +37,18 @@ public class CameraRender implements GLSurfaceView.Renderer {
 //        fullFrameRect = new FullFrameRect(new Texture2dProgram(Texture2dProgram.ProgramType.TEXTURE_EXT));
 //
 //        mTextureId = fullFrameRect.createTextureObject();
-        filter = new BaseFilter(mContext);
+        filter = new LutColorFilter(mContext);
         mTextureId = filter.createTextureObject();
         mSurfaceTexture = new SurfaceTexture(mTextureId);
+
+
+        try {
+            Bitmap bitmap = BitmapFactory.decodeStream(mContext.getResources().getAssets().open("nt_L9_1.png"));
+            filter.setBitmap(bitmap);
+        }catch (IOException e){
+
+        }
+
     }
 
     @Override
