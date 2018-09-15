@@ -87,8 +87,8 @@ public class BaseFilter {
 
        GLES20.glEnableVertexAttribArray(aPositionLocation);
        GlUtil.checkGlError("glEnableVertexAttribArray aPositionLocation");
-
        GLES20.glVertexAttribPointer(aPositionLocation, 2, GLES20.GL_FLOAT, false, 4 * 2, vertexBuffer);
+
 
        GLES20.glEnableVertexAttribArray(aTextureCoordLocation);
        GLES20.glVertexAttribPointer(aTextureCoordLocation, 2, GLES20.GL_FLOAT, false, 4 * 2,  textureBuffer);

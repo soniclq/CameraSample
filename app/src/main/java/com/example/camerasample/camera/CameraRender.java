@@ -31,6 +31,9 @@ public class CameraRender implements GLSurfaceView.Renderer {
     private int mScreen_width;
     private int mScreen_height;
     private boolean changeFilter = false;
+    private int NORMAL = 0;
+    private int FILTER = 1;
+    private int currentType = FILTER;
 
     public CameraRender(Context context, Handler handler){
         mHandler = handler;
@@ -47,7 +50,7 @@ public class CameraRender implements GLSurfaceView.Renderer {
 
 
         try {
-            Bitmap bitmap = BitmapFactory.decodeStream(mContext.getResources().getAssets().open("nt_L6_1.png"));
+            Bitmap bitmap = BitmapFactory.decodeStream(mContext.getResources().getAssets().open("lut_01.png"));
             filter.setBitmap(bitmap);
         }catch (IOException e){
 
@@ -73,7 +76,20 @@ public class CameraRender implements GLSurfaceView.Renderer {
 //        fullFrameRect.drawFrame(mTextureId, texmatrix);
         if(changeFilter){
             filter.releaseProgram();
-            filter = new BaseFilter(mContext);
+            if(currentType == FILTER) {
+                filter = new BaseFilter(mContext);
+                currentType = NORMAL;
+            }else if(currentType == NORMAL){
+                filter = new LutColorFilter(mContext);
+                try {
+
+                    Bitmap bitmap = BitmapFactory.decodeStream(mContext.getResources().getAssets().open("lut_02.png"));
+                    filter.setBitmap(bitmap);
+                }catch (IOException e){
+
+                }
+                currentType = FILTER;
+            }
             changeFilter = false;
         }
 

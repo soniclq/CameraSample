@@ -30,7 +30,7 @@ public class LutColorFilter extends BaseFilter {
     }
 
     protected int getFragmentShaderId() {
-        return R.raw.fragment_shader_lut;
+        return R.raw.fragment_shader_lut_small;
     }
 
 
@@ -53,6 +53,7 @@ public class LutColorFilter extends BaseFilter {
 
         GLES20.glActiveTexture(GLES20.GL_TEXTURE1);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, inputTextureId);
+
         GLES20.glUniform1i(inputImageTexture2Location, 1);
 
         GLES20.glUniform1f(ratioLocation, mRatio);
