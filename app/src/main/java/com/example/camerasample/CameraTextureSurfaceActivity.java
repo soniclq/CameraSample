@@ -43,6 +43,7 @@ public class CameraTextureSurfaceActivity extends Activity implements View.OnCli
     private final int VIDEO_HEIGHT = 1200;
 
     private Button btn;
+    private Button changeBtn;
 
     private MediaMuxer mediaMuxer;
     private String mPath = "/sdcard/test3.mp4";
@@ -64,6 +65,8 @@ public class CameraTextureSurfaceActivity extends Activity implements View.OnCli
         cameraSurfaceView = (CameraSurfaceView) findViewById(R.id.surface_view);
 //        mSurfaceView.getHolder().addCallback(this);
         btn = (Button)findViewById(R.id.btn_stop);
+        changeBtn = (Button)findViewById(R.id.switch_filter);
+        changeBtn.setOnClickListener(this);
         btn.setOnClickListener(this);
 
     }
@@ -291,6 +294,11 @@ public class CameraTextureSurfaceActivity extends Activity implements View.OnCli
                     mAudioEncoder.closeCodec();
                     mediaMuxer.stop();
                     mediaMuxer.release();
+                }
+                break;
+            case  R.id.switch_filter:
+                if(cameraSurfaceView != null){
+                    cameraSurfaceView.changeFilter();
                 }
                 break;
             default:

@@ -62,13 +62,19 @@ public class BaseFilter {
 
    public void draw(int textureTarget, int textureId,  FloatBuffer vertexBuffer, FloatBuffer textureBuffer ,float[] textMatrix, int screen_width, int screen_height){
        GLES20.glUseProgram(mFilterProgram);
-       bindGLValue(mTextureTarget, textureId, vertexBuffer, textureBuffer, textMatrix);
+       onBindGlslValue(mTextureTarget, textureId, vertexBuffer, textureBuffer, textMatrix);
 
        GLES20.glViewport(0,0, screen_width, screen_height);
        GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
+
+       unbindGLSLValues();
+       unbindTexture();
+       disuseProgram();
+
+
    }
 
-   protected void bindGLValue(int targetTarget, int targetId, FloatBuffer vertexBuffer, FloatBuffer textureBuffer, float[] textMatrix){
+   protected void onBindGlslValue(int targetTarget, int targetId, FloatBuffer vertexBuffer, FloatBuffer textureBuffer, float[] textMatrix){
 
        GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
        GlUtil.checkGlError("glActiveTexture");
@@ -121,4 +127,25 @@ public class BaseFilter {
    public void setBitmap(Bitmap bitmap){
 
    }
+
+   protected  void unbindGLSLValues(){
+       GLES20.glDisableVertexAttribArray(aPositionLocation);
+       GLES20.glDisableVertexAttribArray(aTextureCoordLocation);
+   }
+
+    protected void unbindTexture() {
+        GLES20.glBindTexture(getTextureTarget(), 0);
+    }
+
+    public int getTextureTarget() {
+        return GLES11Ext.GL_TEXTURE_EXTERNAL_OES;
+    }
+    protected void disuseProgram() {
+        GLES20.glUseProgram(0);
+    }
+
+    public void releaseProgram(){
+       GLES20.glDeleteProgram(mFilterProgram);
+       mFilterProgram = -1;
+    }
 }

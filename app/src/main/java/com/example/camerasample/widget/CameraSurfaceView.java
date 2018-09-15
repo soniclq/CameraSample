@@ -110,4 +110,8 @@ public class CameraSurfaceView extends GLSurfaceView implements SurfaceTexture.O
     public void onFrameAvailable(SurfaceTexture surfaceTexture) {
         requestRender();
     }
+
+    public void changeFilter(){
+        mCameraRender.changeFilter();
+    }
 }

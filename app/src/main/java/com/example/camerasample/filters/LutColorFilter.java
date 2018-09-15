@@ -23,28 +23,46 @@ public class LutColorFilter extends BaseFilter {
         ratioLocation = GLES20.glGetUniformLocation(mFilterProgram, "ratio");
     }
 
-    public void setBitmap(Bitmap bitmap){
+    public void setBitmap(Bitmap bitmap) {
         inputImageTexture2Location = GLES20.glGetUniformLocation(mFilterProgram, "inputImageTexture2");
 
         inputTextureId = GlUtil.createTexture(GLES20.GL_TEXTURE_2D, bitmap);
     }
 
-    protected  int getFragmentShaderId(){
+    protected int getFragmentShaderId() {
         return R.raw.fragment_shader_lut;
     }
 
 
-    public void draw(int textureTarget, int textureId, FloatBuffer vertexBuffer, FloatBuffer textureBuffer , float[] textMatrix, int screen_width, int screen_height){
+    public void draw(int textureTarget, int textureId, FloatBuffer vertexBuffer, FloatBuffer textureBuffer, float[] textMatrix, int screen_width, int screen_height) {
         GLES20.glUseProgram(mFilterProgram);
-        bindGLValue(mTextureTarget, textureId, vertexBuffer, textureBuffer, textMatrix);
+        onBindGlslValue(mTextureTarget, textureId, vertexBuffer, textureBuffer, textMatrix);
+
+
+        GLES20.glViewport(0, 0, screen_width, screen_height);
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
+
+        unbindGLSLValues();
+        unbindTexture();
+        disuseProgram();
+    }
+
+
+    protected void onBindGlslValue(int targetTarget, int targetId, FloatBuffer vertexBuffer, FloatBuffer textureBuffer, float[] textMatrix) {
+        super.onBindGlslValue(targetTarget, targetId, vertexBuffer, textureBuffer, textMatrix);
 
         GLES20.glActiveTexture(GLES20.GL_TEXTURE1);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, inputTextureId);
         GLES20.glUniform1i(inputImageTexture2Location, 1);
 
         GLES20.glUniform1f(ratioLocation, mRatio);
-
-        GLES20.glViewport(0,0, screen_width, screen_height);
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
     }
+
+    protected void unbindTexture() {
+        super.unbindTexture();
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
+    }
+
+
+
 }
