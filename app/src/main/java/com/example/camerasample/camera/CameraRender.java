@@ -8,6 +8,7 @@ import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.os.Handler;
+import android.util.Log;
 
 import com.example.camerasample.filters.BaseFilter;
 import com.example.camerasample.filters.LutColorFilter;
@@ -63,6 +64,7 @@ public class CameraRender implements GLSurfaceView.Renderer {
         mHandler.sendMessage(mHandler.obtainMessage(CameraSurfaceView.CAMERA_SETUP, width, height, mSurfaceTexture));
         mScreen_width = width;
         mScreen_height = height;
+        Log.e("lqdebug", "width ="+ width + "height =" + height);
     }
 
     @Override

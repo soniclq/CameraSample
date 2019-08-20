@@ -1,6 +1,5 @@
-precision lowp float;
 #extension GL_OES_EGL_image_external : require
-
+precision lowp float;
 varying highp vec2 textureCoordinate;
 
 uniform samplerExternalOES inputImageTexture;

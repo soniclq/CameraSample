@@ -56,7 +56,7 @@ public class LutColorFilter extends BaseFilter {
 
         GLES20.glUniform1i(inputImageTexture2Location, 1);
 
-        GLES20.glUniform1f(ratioLocation, mRatio);
+//        GLES20.glUniform1f(ratioLocation, mRatio);
     }
 
     protected void unbindTexture() {

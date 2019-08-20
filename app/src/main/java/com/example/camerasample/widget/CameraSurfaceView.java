@@ -7,11 +7,13 @@ import android.opengl.GLSurfaceView;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
+import android.util.Log;
 
 import com.example.camerasample.camera.CameraRender;
 import com.example.camerasample.camera.CommonHandlerListener;
 
 import java.io.IOException;
+import java.util.List;
 
 public class CameraSurfaceView extends GLSurfaceView implements SurfaceTexture.OnFrameAvailableListener, CommonHandlerListener{
     public static final int CAMERA_SETUP = 1;
@@ -35,7 +37,7 @@ public class CameraSurfaceView extends GLSurfaceView implements SurfaceTexture.O
 
     private void init(Context context){
         cameraHandler = new CameraHandler(this);
-        setEGLContextClientVersion(2);
+        setEGLContextClientVersion(3);
         mCameraRender = new CameraRender(context, cameraHandler);
 
         setRenderer(mCameraRender);
@@ -94,9 +96,15 @@ public class CameraSurfaceView extends GLSurfaceView implements SurfaceTexture.O
 
     private void openCamera(SurfaceTexture texture){
         mCamera = Camera.open();
-        Camera.Parameters  parameters = mCamera.getParameters();
-        parameters.setRotation(90);
-        mCamera.setParameters(parameters);
+        Camera.Parameters parameters = mCamera.getParameters();
+        List<Camera.Size> list = parameters.getSupportedPreviewSizes();
+        for (Camera.Size l:
+             list) {
+            Log.e("lqdebug", "width "+ l.width + ", height" + l.height);
+        }
+//        Camera.Parameters  parameters = mCamera.getParameters();
+//        parameters.setRotation(90);
+//        mCamera.setParameters(parameters);
         Camera.Size size = mCamera.getParameters().getPreviewSize();
 
         try {
